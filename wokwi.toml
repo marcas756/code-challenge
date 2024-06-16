@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/code-challenge.bin'
+elf = 'build/code-challenge.elf'
