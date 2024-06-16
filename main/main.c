@@ -197,7 +197,7 @@ void app_main() {
 
 
     // Create task1 on Core 0
-    if ( xTaskCreatePinnedToCore(task1, "Task1", 2048, NULL, 1, NULL, 0) != pdPASS )
+    if ( xTaskCreatePinnedToCore(task1, "Task1", 2048, NULL, 2, NULL, 0) != pdPASS )
     {
         DBG("Failed to create Task1 on core 0\n");
         failure_handler(1);  
