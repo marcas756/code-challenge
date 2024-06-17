@@ -2,9 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "espidf",
-      "name": "Launch",
-      "request": "launch"
+      "name": "Wokwi GDB",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/code-challenge.elf",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "${userHome}/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gdb",
+      "miDebuggerServerAddress": "localhost:3333"
     }
   ]
 }

@@ -162,5 +162,11 @@ By using FreeRTOS primitives for synchronisation, IPC and delays, there is no bl
 
 Global variables required : shared between Task1 and Task2 : 1 Mutex, 1 Message Queue, 1 Buffer Memory Pool
 
+### Debugging using OpenOCD/GDB
 
-### All other decisions are made by you how you would implement the functionality.
+
+![Debugging with GDB](vscode_debug.png)
+
+
+
+
