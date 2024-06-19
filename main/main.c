@@ -30,6 +30,14 @@ SemaphoreHandle_t dt_poollock;  // shared resource access mutex
 QueueHandle_t dt_msg_queue;     // Messages are buffered in contrast to notifications, but are more complex
 
 
+TaskHandle_t task1_handle;
+
+void task1_scheduling_callback(TimerHandle_t xTimer)
+{
+    // Notify the task to perform its operation
+    xTaskNotifyGive(task1_handle);
+}
+
 
 // Task1 : This task should run every 10 ms using the RTOS delay functions 
 #define TASK1_SCHEDULING_TIME   (10/portTICK_PERIOD_MS)
@@ -42,6 +50,7 @@ void task1(void *pvParameters) {
 
     // Task 1 : Create two RTOS tasks running on different cores
     DBG("Task 1 running on core %d\n", xPortGetCoreID());
+
 
 
 
@@ -60,13 +69,33 @@ void task1(void *pvParameters) {
 
     BUFFER_INIT(*dt_curr);
 
+
+     // Create the timer
+    TimerHandle_t task1_scheduling_timer = xTimerCreate(
+        "task1_scheduling_timer",           // Timer name
+        TASK1_SCHEDULING_TIME,    // Timer period in ticks (10 ms)
+        pdTRUE,                // Auto-reload (repeated)
+        (void *)task1_handle,// Timer ID (task handle)
+        task1_scheduling_callback);    // Callback function
+
+    // Start the timer
+    if ( (task1_scheduling_timer == NULL) || (xTimerStart(task1_scheduling_timer, 0) != pdPASS) )
+    {
+        DBG("Failed starting timer\n");
+        failure_handler(1); 
+    }
+
+
+
+
     // Start time measurement
     int64_t dt_start = esp_timer_get_time();
     
     while (1) 
     {  
         // Task1 : This task should run every ~10 ms using the RTOS delay functions      
-        vTaskDelay(TASK1_SCHEDULING_TIME);
+        // Wait indefinitely for the task to be triggered
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
         // Calculate the time interval
         int64_t dt_stop = esp_timer_get_time();
@@ -197,7 +226,7 @@ void app_main() {
 
 
     // Create task1 on Core 0
-    if ( xTaskCreatePinnedToCore(task1, "Task1", 2048, NULL, 2, NULL, 0) != pdPASS )
+    if ( xTaskCreatePinnedToCore(task1, "Task1", 2048, NULL, 2, &task1_handle, 0) != pdPASS )
     {
         DBG("Failed to create Task1 on core 0\n");
         failure_handler(1);  
